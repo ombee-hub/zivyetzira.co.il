@@ -97,6 +97,65 @@
     $$('.ws').forEach(s => spy.observe(s));
   }
 
+  /* ---------- טופס יצירת קשר: אימות ושליחה בוואטסאפ / במייל (אין שרת) ---------- */
+  const form = $('#contact-form');
+  if (form) {
+    const WA_NUM = '972528666223', EMAIL = 'zina@arava.co.il';
+    const summary = $('#form-errors'), ok = $('#form-success');
+    const F = n => form.elements[n];
+    const rules = [
+      ['name', v => v.trim().length >= 2 || 'נא למלא שם מלא'],
+      ['phone', v => { const d = v.replace(/\D/g, '').replace(/^972/, '0'); return /^0\d{8,9}$/.test(d) || 'נא למלא מספר טלפון תקין, למשל 052-1234567'; }],
+      ['email', v => !v.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'כתובת האימייל אינה תקינה'],
+      ['subject', v => !!v || 'נא לבחור נושא פנייה'],
+      ['message', v => v.trim().length >= 2 || 'נא לכתוב הודעה'],
+      ['consent', (v, el) => el.checked || 'יש לאשר את מדיניות הפרטיות'],
+    ];
+    const check = name => {
+      const el = F(name), res = rules.find(r => r[0] === name)[1](el.value, el);
+      const msg = res === true ? '' : res;
+      el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      const err = document.getElementById(el.id + '-err');
+      if (err) err.textContent = msg;
+      return msg;
+    };
+    // אחרי ניסיון שליחה ראשון – מתקנים את ההודעות תוך כדי הקלדה
+    let tried = false;
+    rules.forEach(([n]) => F(n).addEventListener(F(n).type === 'checkbox' || F(n).tagName === 'SELECT' ? 'change' : 'input', () => tried && check(n)));
+
+    const fmtDate = v => v ? v.split('-').reverse().join('/') : '';
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      tried = true; ok.hidden = true;
+      const errors = rules.map(([n]) => [n, check(n)]).filter(([, m]) => m);
+      if (errors.length) {
+        summary.innerHTML = `יש לתקן ${errors.length === 1 ? 'שדה אחד' : errors.length + ' שדות'}:<ul>${errors.map(([n, m]) => `<li><a href="#${F(n).id}">${m}</a></li>`).join('')}</ul>`;
+        summary.hidden = false; summary.focus();
+        $$('a', summary).forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); document.querySelector(a.getAttribute('href')).focus(); }));
+        return;
+      }
+      summary.hidden = true;
+      const lines = [
+        'פנייה מאתר זיו היצירה',
+        `שם: ${F('name').value.trim()}`,
+        `טלפון: ${F('phone').value.trim()}`,
+        F('email').value.trim() ? `אימייל: ${F('email').value.trim()}` : null,
+        `נושא: ${F('subject').value}`,
+        F('date').value ? `תאריך מבוקש: ${fmtDate(F('date').value)}` : null,
+        F('people').value ? `מספר משתתפים: ${F('people').value}` : null,
+        '', F('message').value.trim(),
+      ].filter(l => l !== null);
+      const text = lines.join('\n');
+      const via = e.submitter && e.submitter.value === 'email' ? 'email' : 'whatsapp';
+      if (via === 'email') {
+        location.href = `mailto:${EMAIL}?subject=${encodeURIComponent('פנייה מהאתר: ' + F('subject').value)}&body=${encodeURIComponent(text)}`;
+      } else {
+        window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+      }
+      ok.hidden = false;
+    });
+  }
+
   /* ---------- reveal on scroll ---------- */
   const rev = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); rev.unobserve(e.target); }
