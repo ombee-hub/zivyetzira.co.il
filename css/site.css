@@ -385,7 +385,7 @@ h1, h2, h3 { font-weight: 800; line-height: 1.12; margin: 0; letter-spacing: -.0
 .footer-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .footer-grid a { text-decoration: none; color: var(--ink-soft); transition: color .2s; font-size: 1.02rem; }
 .footer-grid a:hover { color: var(--burgundy); }
-.footer-brand img { height: 84px; width: auto; margin-bottom: 14px; mix-blend-mode: multiply; }
+.footer-brand img { height: 84px; width: auto; margin-bottom: 14px; }
 .footer-brand p { color: var(--ink-soft); font-size: 1.02rem; margin: 0; max-width: 36ch; }
 .socials { display: flex; gap: 10px; margin-top: 18px; }
 .socials a { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center; color: var(--ink); transition: background .2s, color .2s, border-color .2s; }
@@ -464,7 +464,7 @@ html.a11y-contrast .cookie-banner { background: #000; border-top-color: #ffeb3b;
   .nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
   .nav-open .site-header { z-index: 130; }
   .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--cream); }
-  .drawer-logo img { height: 52px; width: auto; mix-blend-mode: multiply; }
+  .drawer-logo img { height: 52px; width: auto; }
   .drawer-x { background: none; border: 0; color: var(--ink); padding: 6px; border-radius: var(--btn-radius); display: grid; place-items: center; }
   .drawer-x:hover { background: rgba(43, 29, 22, .06); }
   .drawer-x svg { width: 26px; height: 26px; }
